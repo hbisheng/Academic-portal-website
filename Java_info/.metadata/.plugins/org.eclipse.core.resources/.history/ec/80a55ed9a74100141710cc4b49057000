@@ -1,0 +1,96 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<h3>在这个页面上展示所有外部链接，并提供添加、编辑、删除等功能</h3>
+
+
+<h4>资源列表</h4>
+<%
+	String this_url = "media_manage.jsp"; 	
+	JdbcDao jdbc = new JdbcDao();
+	String action = request.getParameter("action");
+	System.out.println(action);
+	if(action != null)//删除某个课程
+	{
+		if(action.equals("delete"))
+		{
+		
+		}
+		else if(action.equals("yes_choose"))
+		{
+		
+		}
+	}
+%>
+
+<hr>
+<%	
+	List<Integer> c= jdbc.getMediaIndex(0);
+	int cnt = 0;
+	if(c!=null){
+		%><table><%
+		for(Integer i : c)
+		{ 
+			++cnt;
+			Media media = jdbc.getMedia(i);
+			String show_url= "../media/show.jsp?id="+media.id;
+
+			%><tr><td><%=media.content%></td><%		
+			%><td><%=media.url%></td><%
+			%><td><%=media.type%></td><%
+			%><td><a href="<%=show_url%>">查看</a></td></tr><%
+			
+		}
+		%></table><%
+	}
+%>
+
+<hr><form name="添加外部资源"action=<%=this_url%> method="post">添加课程界面：
+	<br/>资源类型<input type="text" name="type" />
+	<br/>资源链接<input type="text" name="url" />
+	<br/>资源名称<input type="text" name="type" />
+	<br/>资源描述 <input type="text" name="content" />
+	<br/><input type="submit" name="add_confirm" value="确认" />
+</form>
+
+<%
+	if(request.getParameter("add_confirm")!=null)//发布新课程
+	{
+		System.out.println("in add_confirm");
+		try {
+			Media m = new Media();
+			String type = request.getParameter("type");
+			if(type!=null)
+				m.type = Integer.parseInt(type);
+			m.url = request.getParameter("url");
+			m.content = request.getParameter("content");
+			if(m.isValid())
+			{
+				jdbc.addMedia(m);
+				System.out.println("加入mediaID！");				
+				response.sendRedirect(this_url);
+			}
+			else{	
+				%>请补全所有信息，并注意type的表示（1：图片  2：音频  3：视频）<%
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+%>
+
+	
+<hr><a href="../home.jsp">返回首页</a>
+</body>
+</html>

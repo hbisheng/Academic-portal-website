@@ -1,0 +1,7 @@
+package edu.thu.cs;
+
+public class Media {
+	public String url =null;
+	public Integer type = 0;
+	
+}

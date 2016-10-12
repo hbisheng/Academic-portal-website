@@ -1,0 +1,19 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<h3><a href="course_manage.jsp">课程管理相关</a>（你可以查看，添加，删除，课程）</h3>
+
+<h3><a href="media_magage.jsp">外部资源管理</a>：你可以查看，添加，删除外部资源</h3>
+
+<h3><a href="user_manage.jsp">用户管理</a>：用户的权限管理，屏蔽发帖，禁止登陆，成为管理员等。</h3>
+
+<h3><a href="../discussion/index.jsp">讨论区管理</a>：用户的权限管理，屏蔽发帖，禁止登陆，成为管理员等。</h3>
+</body>
+</html>

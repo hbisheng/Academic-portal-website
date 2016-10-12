@@ -1,0 +1,37 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Insert title here</title>
+
+<% String s = session.getId(); 
+	response.setHeader("", "5/index.jsp")
+
+%>
+    <p>你的session对象ID是：</p><%= s %>
+ <%!
+    int Num = 0; //定义前面要加!号
+    synchronized void countPeople() { //同步方法
+      Num++;
+    }
+  %>
+  <%
+    if (session.isNew()) { //判断是否为新用户
+      countPeople();
+      String str = String.valueOf(Num);
+      session.setAttribute("count", str); //将str 添加到session对象中
+    }
+  	
+  %>
+    <p>      你是第
+<%=(String)session.getAttribute("count")%>      个访问本站的人
+    </p>
+</head>
+<body>
+<a href="css2.jsp?type=cao">To the cao page</a>
+
+<a href="css2.jsp?type=shit">To the shit page</a>
+</body>
+</html>

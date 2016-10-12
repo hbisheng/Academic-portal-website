@@ -1,0 +1,70 @@
+<%@page import="mail.MailTest" %>
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+	try{
+		JdbcDao jdbc = new JdbcDao();
+		String content = request.getParameter("token");
+		Token token = null;
+		if(content != null)
+		{
+			token = jdbc.getToken(content);
+			if(token != null)
+			{
+				if(token.operation==1)
+				{
+					User user = new User();
+					user.id = token.user_id;
+					user = jdbc.getUser(user);
+					user.verify=1;
+					jdbc.updateUser(user);
+					session.setAttribute("user",user);
+					response.sendRedirect("../home.jsp");
+				}
+				if(token.operation==2)
+				{
+					
+					String this_url = "remote.jsp?token="+token.content;
+					
+					User user = new User();
+					user.id = token.user_id;
+					user = jdbc.getUser(user);
+					if(user.verify == 0)
+					{
+						out.println("对不起，你还乜有验证");
+						return;
+					}
+					//设置新密码即可
+					%><form action=this_url method="post">
+					<input type="password" name="password"><input type="submit" name="regain">
+					</form><%
+					
+					if(request.getParameter("regain")!=null)
+					{
+						String password = request.getParameter("password"); 
+						if(password!= null)
+						{
+							
+						}
+					}
+				}
+			}
+		}
+		else
+			return;
+	}catch(Exception e){System.out.println(e);}
+%>
+
+<hr>Join us→<a href="register.jsp">注册</a>
+</body>
+</html>

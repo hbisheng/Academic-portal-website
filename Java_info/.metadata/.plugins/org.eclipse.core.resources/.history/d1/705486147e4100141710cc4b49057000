@@ -1,0 +1,109 @@
+<%@page import="mail.MailTest" %>
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<% 
+	JdbcDao jdbc = new JdbcDao();
+%>
+	<form name="登陆"action="login.jsp" method="post">
+	登陆界面：
+	<br/>
+	Name: 	
+	<input type="text" name="name" value = "SexyDouble"/>
+	<br />
+	password: 
+	<input type="text" name="password" value= "asdasd" />
+	<br/>
+	<input type="submit" name="login" value="登陆" />
+	</form>
+	
+	<li><a href="regain.jsp"><b>忘记了密码</b></a></li>
+<%
+
+	if(request.getParameter("login")!=null)
+	{
+		try {
+			String a = request.getParameter("name");
+			String b = request.getParameter("password");
+			if(a != null && b != null){
+				User tmp = new User(); tmp.account = a;
+				User tar = jdbc.getUser(tmp);
+				if(tar.verify<=0)
+				{	
+					out.println("您的账户还没有验证，请登录邮箱验证");
+					out.println("找不到邮件了？点击这里来重发一封邮件→");
+					%><form name="登陆"action="login.jsp" method="post">
+					<input type="hidden" value="<%=tar.id%>" name = "user_id">
+					<input type="submit" value="重发邮件" name = "regain"/>
+					</form><%
+					return;
+				}
+				if(tar.permit_login <= 0)
+				{	
+					out.println("管理员屏蔽了，不能登录");
+					return;
+				}
+				if(tar != null)
+					if(tar.password.equals(b))
+					{
+						%><br>你好！<%=tar.realname%> <br>过一秒钟后自动跳转到主页<% 
+						session.setAttribute("user", tar);
+						response.setHeader("refresh","1;url=../home.jsp");			
+					}		
+					else
+					{
+						%>您的密码不正确<%
+					}
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	if(request.getParameter("regain")!=null)
+	{
+		Token token = new Token();
+		token.operation = 1;
+		token.user_id = Integer.parseInt((request.getParameter("user_id")));
+		
+		Calendar c = Calendar.getInstance();
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+		token.content = session.getId()+df.format(c.getTime());
+		
+		jdbc.addToken(token);
+		
+		String address = "localhost";
+		MailTest.sendmail("hbisheng@126.com","http://"+address+":8060/NewInfo/account/remote.jsp?token="+token.content);
+		
+		
+		
+		Token token = new Token();
+		token.operation = 1;
+		token.user_id = user.id;
+		
+		
+		
+		jdbc.addToken(token);
+
+		InetAddress host = InetAddress.getLocalHost();
+		String address = host.getHostAddress();
+		
+		MailTest.sendmail(user.account,"http://"+address+":8060/NewInfo/account/remote.jsp?token="+token.content);
+		
+		
+		out.println("邮件已经发送");
+		return;
+	}
+%>
+
+<hr>Join us→<a href="register.jsp">注册</a>
+</body>
+</html>

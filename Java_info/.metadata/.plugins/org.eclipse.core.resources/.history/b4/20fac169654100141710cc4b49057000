@@ -1,0 +1,30 @@
+package edu.thu.cs;
+import jdbc.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Category {
+	public int id=0;
+	public String name=null;
+	public boolean validate()
+	{
+		return (name != null);
+	}
+	public boolean isOld()
+	{
+		JdbcDao jdbc = new JdbcDao();
+		List<Integer> index = jdbc.getCategoryIndex();
+		for(Integer i: index)
+		{
+			if(jdbc.getCategory(i).name.equals(name))
+				return true;
+		}
+		return true;
+	}
+}

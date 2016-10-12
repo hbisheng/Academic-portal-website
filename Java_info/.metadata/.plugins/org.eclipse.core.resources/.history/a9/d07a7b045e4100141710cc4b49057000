@@ -1,0 +1,871 @@
+package jdbc;
+import java.util.*;
+import java.sql.*;
+import edu.thu.cs.*;
+import java.text.*;
+
+public class JdbcDao {
+	public String TAG = this.getClass().getName();
+	public static String URL = "jdbc:mysql://localhost:3306/";
+	public static String DATABASENAME = "info";
+	static {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public User addUser(User user) //参数user需要保证validate = true  需要提前检查重名
+	{
+		try {
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement(
+		    		"INSERT INTO user VALUES(NULL,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		    Statement.setString(1,user.account);
+		    Statement.setString(2,user.password);
+		    Statement.setString(3,user.realname);
+		    Statement.setString(4,user.nickname);
+		    Statement.setString(5,user.sex);
+		    Statement.setString(6,user.birth);
+		    Statement.setString(7,user.phone);
+		    Statement.setString(8,user.e_name);
+		    Statement.setString(9,user.e_phone);
+		    Statement.setString(10,user.address);
+		    Statement.setString(11, user.qq);
+		    Statement.setInt(12, user.verify);
+		    Statement.setInt(13, user.permit_admin);
+		    Statement.setInt(14, user.permit_post);
+		    Statement.setInt(15, user.permit_login);
+		    Statement.executeUpdate();
+		    if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		user.id = 0;//search by account
+		return getUser(user);
+	}	
+	
+	public User getUser(User user)//依次按照以下参数寻找  id, account, nickname, 它们都是唯一的，如果要跳过就置0或置null  
+	{
+		User target = new User();
+		target.id = 0;
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs;
+			if(user.id != 0)
+			{
+				 rs = stmt.executeQuery("select * from user where id="+user.id);
+			}
+			else if(!(user.account.equals("")))
+			{
+				 rs = stmt.executeQuery("select * from user where account=\""+user.account+"\"");
+			}
+			else if(!(user.nickname.equals("")))
+			{
+				 rs = stmt.executeQuery("select * from user where nickname=\""+user.nickname+"\"");
+				 System.out.println("getUser by nickname");
+			}
+			else
+			{
+				System.out.println("查找失败，没有提供足够的信息");
+				return null;
+			}
+			while (rs.next()) {
+		    	target.id = Integer.parseInt(rs.getString("id"));
+		    	target.account = rs.getString("account");
+		    	target.password = rs.getString("password");
+		    	target.realname = rs.getString("realname");
+		    	target.nickname = rs.getString("nickname");
+		    	target.sex = rs.getString("sex");
+		    	target.birth = rs.getString("birth");
+		    	target.phone = rs.getString("phone");
+		    	target.e_name = rs.getString("e_name");
+		    	target.e_phone = rs.getString("e_phone");
+		    	target.address = rs.getString("address");
+		    	target.qq = rs.getString("qq");
+		    	target.verify = Integer.parseInt(rs.getString("verify"));
+		    	target.permit_admin = Integer.parseInt(rs.getString("permit_admin"));
+		    	target.permit_post = Integer.parseInt(rs.getString("permit_post"));
+		    	target.permit_login = Integer.parseInt(rs.getString("permit_login"));
+			}
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(target.id == 0)//找不到该用户
+		{	
+			System.out.println("没有找到符合要求的用户");
+			return null;
+		}
+		else
+			return target;
+	}
+	public void updateUser(User user)//the id has to be the old one, contents are new.
+	{
+		try {
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement
+					("update user set password=?,nickname=?, sex=?, birth=?,phone=?,"
+					+ "e_name=?,e_phone=?,address=?,qq=?,verify=?,permit_admin=?,permit_post=?,permit_login=? where id ="+user.id);
+			
+			Statement.setString(1,user.password);
+			Statement.setString(2,user.nickname);
+			Statement.setString(3,user.sex);
+			Statement.setString(4,user.birth);
+			Statement.setString(5,user.phone);
+			Statement.setString(6,user.e_name);
+			Statement.setString(7,user.e_phone);
+			Statement.setString(8,user.address);
+			Statement.setString(9,user.qq);
+			Statement.setInt(10, user.verify);
+		    Statement.setInt(11, user.permit_admin);
+		    Statement.setInt(12, user.permit_post);
+		    Statement.setInt(13, user.permit_login);
+		    Statement.executeUpdate();
+		    if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public List<Integer> getUserIndex() {
+		List<Integer> list = new ArrayList<Integer>();
+		try {
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from user");
+			while (rs.next()) {
+				list.add(rs.getInt("id"));
+			}
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	public void delUser(User user)
+	{
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("delete from user where id=" + user.id);
+			Statement.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	//About the course!!
+	
+	public int addCourse(Course course) //参数user需要保证validate = true  需要提前检查重名
+	{
+		int course_id = 0;
+		try {
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement(
+		    		"INSERT INTO course VALUES(NULL,?,?,?,?,?,?,?,?)");
+		    Statement.setInt(1,course.valid);
+		    Statement.setString(2,course.name);
+		    Statement.setString(3,course.teacher);
+		    Statement.setString(4,course.content);
+		    Statement.setInt(5,course.capacity);
+		    Statement.setString(6,course.classtime);
+		    Statement.setString(7,course.start_time);
+		    Statement.setString(8,course.end_time);
+		    Statement.executeUpdate();
+		    
+		    Statement stmt = conn.createStatement();
+		    ResultSet rs = stmt.executeQuery("select * from course where name=\""+course.name+"\" and teacher= \""+course.teacher+"\"");
+		    while (rs.next()) {
+				course_id = rs.getInt("id");
+			}
+		    if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		    if(stmt!=null)
+		    	stmt.close();
+		    if(rs!=null)
+		    	rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return course_id;
+	}	
+	
+	public Course getCourse(int course_id)//依次按照以下参数寻找  id, account, nickname, 它们都是唯一的，如果要跳过就置0或置null  
+	{
+		Course target = new Course();
+		target.id = 0;
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs;
+			if(course_id != 0)
+			{
+				 rs = stmt.executeQuery("select * from course where id="+course_id+" and valid = 1");
+			}
+			else
+			{
+				System.out.println("查找失败,course中没有提供足够的信息");
+				return null;
+			}
+			
+			while (rs.next()) {
+		    	target.id = Integer.parseInt(rs.getString("id"));
+		    	target.valid = rs.getInt("valid");
+		    	target.name = rs.getString("name");
+		    	target.teacher = rs.getString("teacher");
+		    	target.content = rs.getString("content");
+		    	target.capacity = rs.getInt("capacity");
+		    	target.classtime = rs.getString("classtime");
+		    	target.start_time = rs.getString("start");
+		    	target.end_time = rs.getString("end");
+		    }
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(target.id == 0)//找不到该用户
+		{	
+			System.out.println("没有找到符合要求的用户课程");
+			return null;
+		}
+		else
+			return target;
+	}
+	
+	public void updateCourse(Course c)//the id has to be the old one, contents are new.
+	{
+		try {
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement
+			("update course set name=?,teacher=?, classtime=?, capacity=?, valid=?,"
+					+ "content=?,start=?,end=? where id ="+c.id);
+			Statement.setString(1,c.name);
+			Statement.setString(2,c.teacher);
+			Statement.setString(3,c.classtime);
+			Statement.setInt(4,c.capacity);
+			Statement.setInt(5,c.valid);
+			Statement.setString(6,c.content);
+			Statement.setString(7,c.start_time);
+			Statement.setString(8,c.end_time);
+		    Statement.executeUpdate();
+		    if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public void delCourse(int course_id) {
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("update course set valid = 0 where id=" + course_id);
+			Statement.executeUpdate();
+			if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public List<Integer> getCourseIndex(int user_id) 
+	{
+		List<Integer> list_c= new ArrayList<Integer>();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs;
+			if(user_id == 0)
+			{
+				rs = stmt.executeQuery("select * from course where valid = 1");
+				while(rs.next())
+				{
+					list_c.add(rs.getInt("id"));	
+				}	
+			}
+			else
+			{
+				rs = stmt.executeQuery("select * from user_course where user_id="+user_id+" and valid = 1");
+				while(rs.next())
+				{
+					list_c.add(rs.getInt("course_id"));	
+				}	
+			}
+			
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list_c;
+	}
+	
+	public void addUserCourse(int uid, int cid)
+	{
+		int yesValid = 1;
+		int yesNew = 1;
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("insert into user_course VALUES(?,?,?,?,?)");
+			Statement.setInt(1,uid);
+			Statement.setInt(2,cid);
+			Statement.setInt(3,yesValid);
+			Statement.setInt(4,yesNew);
+
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Calendar c = Calendar.getInstance();
+			Statement.setString(5, df.format(c.getTime()));
+			
+			Statement.executeUpdate();
+			if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void delUserCourse(int uid, int cid)
+	{
+		int yesValid = 0;
+		int yesNew = 0;
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("update user_course set valid = 0 where course_id=? and user_id=?");
+			Statement.setInt(1,cid);
+			Statement.setInt(2,uid);
+			Statement.executeUpdate();
+			
+			Statement=conn.prepareStatement("insert into user_course VALUES(?,?,?,?,?)");
+			Statement.setInt(1,uid);
+			Statement.setInt(2,cid);
+			Statement.setInt(3,yesValid);
+			Statement.setInt(4,yesNew);
+			
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Calendar c = Calendar.getInstance();
+			Statement.setString(5, df.format(c.getTime()));
+			Statement.executeUpdate();
+			
+			if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public int checkUserCourse(int uid, int cid)
+	{
+		try {			
+			System.out.println("In checkUC uid:"+uid+" cid: "+cid);
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from user_course where course_id="+cid+" and valid=1 and user_id="+uid);
+			
+			String s = null;
+			while(rs.next())
+			{
+				s = rs.getString("time");
+			}
+			if()
+			conn.close();
+			stmt.close();
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		System.out.println(s);
+		
+		return 0;
+	}
+	
+	public List<Integer> getUserCourse(int course_id)//get the list of the users_id that has this course
+	{
+		List<Integer> list_c= new ArrayList<Integer>();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs;
+			if(course_id == 0)
+			{
+				System.out.println("In getUserCourse 没有提供课程编号");	
+				return null;
+			}
+			else
+			{
+				rs = stmt.executeQuery("select * from user_course where course_id="+course_id+" and valid=1");
+				while(rs.next())
+				{
+					list_c.add(rs.getInt("user_id"));	
+				}	
+			}
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list_c;
+	}
+	public List<UserCourse> getUserCourseHistory(int user_id)//get the list of the users_id that has this course
+	{
+		List<UserCourse> list_c= new ArrayList<UserCourse>();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs;
+			if(user_id == 0)
+			{
+				System.out.println("In getUserCourseHistory 没有提供user编号");	
+				return null;
+			}
+			else
+			{
+				rs = stmt.executeQuery("select * from user_course where user_id="+user_id);
+				while(rs.next())
+				{
+					UserCourse tmp = new UserCourse();
+					tmp.user_id = rs.getInt("user_id");
+					tmp.course_id = rs.getInt("course_id");
+					tmp.valid = rs.getInt("valid");
+					tmp.operation = rs.getInt("operation");
+					tmp.time = rs.getString("time").substring(0, 19);
+					list_c.add(tmp);	
+				}	
+			}
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list_c;
+	}
+	
+	public void addCategory(Category c)
+	{
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("insert into category VALUES(NULL,?)");
+			Statement.setString(1,c.name);
+			Statement.executeUpdate();
+			if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public Category getCategory(int id)
+	{
+		Category c = new Category();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from category where id ="+id);
+		    while (rs.next()) {
+		    	c.id = rs.getInt("id");
+		    	c.name = rs.getString("Name");
+		    }
+		    if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return c;
+	}
+	public void delCategory(int category_id)
+	{
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("delete from category where id=" + category_id);
+			Statement.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public List<Integer> getCategoryIndex()
+	{
+		List<Integer> list_c= new ArrayList<Integer>();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from category");
+			while(rs.next())
+		 	{
+				list_c.add(rs.getInt("id"));
+			}
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list_c;
+	}
+	
+
+	public int addPost(Post post){
+		int post_id=0;
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("insert into post VALUES(NULL,?,?,?,?)");
+			Statement.setInt(1,post.category_id);
+		    Statement.setString(2,post.topic);
+		    Statement.setString(3,post.initiator);
+		    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Calendar c = Calendar.getInstance();
+			Statement.setString(4, df.format(c.getTime()));
+		    Statement.executeUpdate();
+		    
+		    Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from post where topic=\""+post.topic+"\" and category_id = "+post.category_id);
+		    while (rs.next()) {
+				post_id = rs.getInt("id");
+			}
+		    
+		    if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		    
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		return post_id;
+	}
+	public void delPost(int post_id)
+	{
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("delete from post where id=" + post_id);
+			Statement.executeUpdate();
+			if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public Post getPost(int post_id)
+	{
+		Post p = new Post();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from post where id ="+post_id);
+		    while (rs.next()) {
+		    	p.id = rs.getInt("id");
+		    	p.category_id = rs.getInt("category_id");
+		    	p.initiator = rs.getString("initiator");
+		    	p.topic = rs.getString("topic");
+		    	p.time = rs.getString("time").substring(0,19);
+		    }
+		    if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return p;
+	}
+	
+	public List<Integer> getPostIndex(int category_id)
+	{
+		List<Integer> list_c= new ArrayList<Integer>();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from post where category_id="+category_id);
+			while(rs.next())
+		 	{
+				list_c.add(rs.getInt("id"));
+			}
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list_c;
+	}
+	
+	
+	public int addReply(Reply reply){
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("INSERT INTO reply VALUES(NULL,?,?,?,?)");
+			Statement.setString(1,reply.content);
+		    Statement.setString(2,Integer.toString(reply.post_id));
+		    Statement.setString(3,Integer.toString(reply.user_id));
+		    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Calendar c = Calendar.getInstance();
+			Statement.setString(4, df.format(c.getTime()));
+		    Statement.executeUpdate();
+		    if(conn != null)
+		    	conn.close();
+		    if(Statement != null)
+		    	Statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	public List<Reply> getReplyList(int post_id)
+	{
+		List<Reply> list_c= new ArrayList<Reply>();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from reply where post_id="+post_id);
+			while(rs.next())
+		 	{
+				Reply tmp = new Reply();
+				tmp.id = rs.getInt("id");
+				tmp.post_id = post_id;
+				tmp.content = rs.getString("content");
+				tmp.user_id = rs.getInt("user_id");
+				tmp.time = rs.getString("time").substring(0,19);
+				list_c.add(tmp);
+			}
+			if(conn != null)
+		    	conn.close();
+		    if(stmt != null)
+		    	stmt.close();
+		    if(rs != null)
+		    	rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list_c;
+	}
+	public void delReply(int id)
+	{
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("delete from reply where id=" + id);
+			Statement.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void addMedia(Media m){
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("insert into post VALUES(NULL,?,?)");
+			Statement.setInt(1,m.type);
+		    Statement.setString(2,m.url);
+		    Statement.executeUpdate();
+		    
+		    conn.close();
+		    Statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	public void delMedia(int media_id)
+	{
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("delete from media where id=" + media_id);
+			Statement.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public Media getMedia(int media_id)
+	{
+		Media p = new Media();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from media where id ="+media_id);
+		    while (rs.next()) {
+		    	p.id = rs.getInt("id");
+		    	p.type = rs.getInt("type");
+		    	p.url = rs.getString("url");
+		    }
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return p;
+	}
+	
+	public List<Integer> getMediaList(int type)
+	{
+		List<Integer> list_c= new ArrayList<Integer>();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = null;
+			if(type == 0)
+				 rs = stmt.executeQuery("select * from media");
+			else
+				 rs = stmt.executeQuery("select * from media where type="+type);
+			while(rs.next())
+				list_c.add(rs.getInt("id"));
+			conn.close();
+			stmt.close();
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list_c;
+	}
+	
+	public Status getStatus()
+	{
+		Status s = new Status();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from status");
+		    while (rs.next()) {
+		    	s.choose = rs.getInt("choose");
+		    }
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return s;
+	}
+	public void updateStatus(Status s)
+	{
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement
+					("update status set choose=?");
+			Statement.setInt(1,s.choose);
+		    Statement.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void addToken(Token c)
+	{
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			PreparedStatement Statement=conn.prepareStatement("insert into token VALUES(?,?,?)");
+			Statement.setInt(1,c.operation);			
+			Statement.setInt(2,c.user_id);			
+			Statement.setString(3,c.content);			
+			Statement.executeUpdate();
+		    
+		    
+		    conn.close();
+		    Statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	public Token getToken(String content)
+	{
+		Token c = new Token();
+		try {			
+			Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from token where content= \""+content+"\"");
+		    while (rs.next()) {
+		    	c.operation = rs.getInt("operation");
+		    	c.user_id = rs.getInt("user_id");
+		    	c.content = content;
+		    }
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return c;
+	}
+	
+
+}

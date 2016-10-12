@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<form action = "index.jsp" method = "post">
+		主题:<input type="text"/><br>
+		内容:
+		<textarea rows="20" cols="100" align="left">This is fucking good!</textarea>
+		<input type ="submit" value="确认提交" name = "deliver"/>
+		</form><%
+</body>
+</html>

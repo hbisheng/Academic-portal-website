@@ -1,0 +1,17 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+课程管理相关:（你可以查看，添加，删除，课程）
+
+外部资源管理：你可以查看，添加，删除外部资源
+
+用户管理：用户的权限管理，屏蔽发帖，禁止登陆，成为管理员等。
+
+</body>
+</html>

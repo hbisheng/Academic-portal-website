@@ -1,0 +1,111 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+
+<%
+	JdbcDao jdbc = new JdbcDao();
+	Status s = jdbc.getStatus();
+	if(s.choose == 0)
+	{
+		out.println("选课开关没有打开，现在不是选课时间");
+		return;
+	}
+%>
+
+<%
+	User user = (User)session.getAttribute("user");
+	if(user != null){
+	%>
+<font size = 3 face ="微软雅黑" color="#00FFFF">
+	你的名字：<%=user.realname %><br>
+	你的ID：<%=user.id %><br>
+	你的地址：<%=user.address %><br>
+</font>
+<% 	}%>
+
+<font size = 6 face ="微软雅黑" ><p><b>Courses that are selectable will be put here.</b></p></font>
+<%  
+	List<Integer> c=null; 
+	user = (User)session.getAttribute("user");
+	if(user==null)
+	{
+		out.println("你还没有登陆，所以没有课程可以选择");
+		return;
+	}
+	else
+		c = jdbc.getCourseIndex(0);
+	int cnt = 0;
+%>	
+	
+<ul>
+<font size = 4 face ="微软雅黑" >
+<% 
+	if(c!=null){
+		for(Integer i : c)
+		{
+			System.out.println(request.getRemoteAddr().toString());
+			Course course = jdbc.getCourse(i);
+			String info_url = "course.jsp?id="+course.id+"&type=1";
+			String in_url = "getin.jsp?cid="+course.id+"&uid="+user.id;
+			
+			int ans = jdbc.checkUserCourse(user.id, course.id);
+			int chosen = course.capacity - jdbc.getUserCourse(course.id).size();
+			++cnt;
+			%><li><p><%=cnt%>. <a href= <%=info_url %> > <%=course.name%> </a><% 
+			if(ans > 0)
+			{
+				<a href= <%=in_url %>> 选课 </a> 
+			}%>
+			
+			课容量:<%=course.capacity %>
+			课余量:<%=chosen%>
+			</p></li><%		
+		} 
+	}
+%>
+
+<hr>
+我已经选的课
+<% 
+	List<Integer> course_list=null;
+	course_list = jdbc.getCourseIndex(user.id);
+	if(course_list!=null){
+		cnt = 0;
+		for(Integer i : course_list)
+		{ 
+			Course course = jdbc.getCourse(i);
+			String info_url = "course.jsp?id="+course.id+"&type=1";
+			String out_url = "getout.jsp?cid="+course.id+"&uid="+user.id;
+			++cnt;
+			%><li><p><%=cnt%>. <a href= <%=info_url %> > <%=course.name%> </a><a href= <%=out_url %> > 退课 </a><%
+		} 
+	}
+%>
+
+<hr>选课历史记录<br>
+<% 
+	List<UserCourse> history = jdbc.getUserCourseHistory(user.id);
+	for(UserCourse entry:history)
+	{
+		if(entry.operation == 1)
+		{%>选课：<%}
+		else
+		{%>退课：<%}
+		%>课程编号   <%=entry.course_id%>  
+		时间：<%=entry.time.substring(0, 19)%><br><% 
+	}
+%>
+
+</body>
+</html>

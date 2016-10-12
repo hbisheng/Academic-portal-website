@@ -1,0 +1,36 @@
+package edu.thu.cs;
+jdbc.*
+public class User {
+	public int id=0;
+	public String account=null;
+	public String password=null;
+	public String realname=null;
+	public String nickname=null;
+	public String sex=null;
+	public String birth=null;
+	public String phone=null;
+	public String e_name=null;
+	public String e_phone=null;
+	public String address=null;
+	public String qq=null;
+	public int verify;
+	public int permit_login;
+	public int permit_post;
+	public int permit_admin;
+	
+	public boolean validate()
+	{
+		if(qq == null)
+			qq = "";
+		return ( (account!=null)&&(password!=null)&&(realname!=null)
+				&&(nickname!=null)&&(sex!=null)&&(birth!=null)&&(phone!=null)
+				&&(e_name!=null)&&(e_phone!=null)&&(address!=null));	
+	}
+	public boolean isNew()
+	{
+		
+		
+		
+		return true;
+	}
+}

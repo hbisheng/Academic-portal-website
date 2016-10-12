@@ -1,0 +1,10 @@
+package edu.thu.cs;
+
+public class Notice {
+	public int id=0;
+	public String name = null;
+	public String author = null;
+	public String content = null;
+	public String time = null;
+	
+}

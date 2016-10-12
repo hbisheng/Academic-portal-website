@@ -1,0 +1,85 @@
+<%@page import="edu.thu.cs.*" %>
+<%@page import="jdbc.JdbcDao"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+try{
+	
+	User mine = (User)(session.getAttribute("user")); 
+	JdbcDao jdbc = new JdbcDao();
+	if(request.getParameter("sex")!=null)
+	mine.sex = request.getParameter("sex");
+	if(request.getParameter("birth")!=null)
+	mine.birth = request.getParameter("birth");
+	if(request.getParameter("phone")!=null)
+	mine.phone = request.getParameter("phone");
+	if(request.getParameter("e_name")!=null)
+	mine.e_name = request.getParameter("e_name");
+	if(request.getParameter("e_phone")!=null)
+	mine.e_phone = request.getParameter("e_phone");
+	if(request.getParameter("address")!=null)
+	mine.address = request.getParameter("address");
+	if(request.getParameter("qq")!=null)
+	mine.qq = request.getParameter("qq");
+%>
+ <form name="修改信息"action="modify.jsp" method="post">
+	注册界面：
+	<br/>
+	*用户名: 	
+	<%=mine.account%>
+	<br />
+	*真实姓名: 	
+	<%=mine.realname%>
+	<br />
+	*昵称: 	
+	<%=mine.nickname%>
+	<br />
+	*性别:
+	<input type="text" name="sex" value = <%=mine.sex%> />
+	<br />
+	*生日: 	
+	<input type="text" name="birth" value = <%=mine.birth%> />
+	<br />
+	*电话号码: 	
+	<input type="text" name="phone" value = <%=mine.phone%> />
+	<br />
+	*紧急联系人名字: 	
+	<input type="text" name="e_name" value = <%=mine.e_name%> />
+	<br />
+	*紧急联系人手机号: 	
+	<input type="text" name="e_phone" value = <%=mine.e_phone%> />
+	<br />
+	*家庭住址:
+	<input type="text" name="address" value = <%=mine.address%> />
+	<br />
+	QQ号码
+	<input type="text" name="qq" value = <%=mine.qq%> />
+	<br />
+	<input type="submit" value="确认修改" name = "confirm" />
+	</form>
+	
+
+<%
+	if(request.getParameter("confirm") != null){
+		jdbc.updateUser(mine);
+		%>
+		<br/>
+		修改成功，过两秒钟后自动跳转到主页
+		<% 
+		response.setHeader("refresh","2;url=../home.jsp");
+	}
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+%>
+
+<hr><a href="../home.jsp">返回首页</a>
+</body>
+</html>

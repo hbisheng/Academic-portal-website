@@ -1,0 +1,66 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<%
+	JdbcDao jdbc = new JdbcDao();
+	User user = (User)session.getAttribute("user");
+	if(user != null)
+	{
+		user = jdbc.getUser(user);
+		session.setAttribute("user",user);
+	}
+%>
+
+<%  
+	int post_id = Integer.parseInt(request.getParameter("id"));
+	Post post = jdbc.getPost(post_id);
+	List<Reply> c=null;
+	c = jdbc.getReplyList(post.id);
+	int cnt = 0;
+%>	
+
+
+<h3>回复列表：</h3>
+
+<ul>
+<font size = 4 face ="微软雅黑" >
+<% 
+	if(c!=null){
+		for(Reply reply: c)
+		{ 
+			%>作者<%
+			
+			%>标题<%
+			%>内容<%
+			%>时间<%
+			
+			User u = jdbc_.getUser(t);
+			%><li><b><%=cnt%>楼： <%=reply.content%> </a></b> 
+			<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b><font color = "red">--<%=u.nickname%>&nbsp&nbsp时间：<%=reply.time %></font></b> </li><%
+			
+			if(cnt!= 1 && reply.user_id == user.id)
+			{		
+				%><form action=<%=this_url%> method = "post"><input type ="hidden" name = "reply_id" value ="<%=reply.id%>"/>
+				<input type ="submit" value="删除我的回复" name = "delete"/></form><%
+			}
+		
+		} 
+	}
+%>
+</font>
+</ul>
+
+
+</body>
+</html>

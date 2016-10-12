@@ -1,0 +1,123 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<%
+	JdbcDao jdbc = new JdbcDao();
+	User user = (User)session.getAttribute("user");
+	if(user != null)
+	{
+		user = jdbc.getUser(user);
+	}
+%>
+
+<%  
+
+	int post_id = Integer.parseInt(request.getParameter("post_id"));
+	Post post = jdbc.getPost(post_id);
+	List<Reply> c=null;
+	c = jdbc.getReplyList(post.id);
+	int cnt = 0;
+	String last_url = "posts.jsp?category_id="+post.category_id;
+	String this_url = "post.jsp?post_id="+post_id;
+%>	
+
+<font size = 6 face ="微软雅黑" ><p><b>
+<% 
+	out.println("帖子标题："+post.topic);
+%>
+</b></p>
+</font>
+
+<h3>回复列表：</h3>
+
+<ul>
+<font size = 4 face ="微软雅黑" >
+<% 
+	if(c!=null){
+		JdbcDao jdbc_ = new JdbcDao();
+		
+		for(Reply reply: c)
+		{ 
+			++cnt;
+			User t = new User(); t.id = reply.user_id;
+			User u = jdbc_.getUser(t);
+			%><li><b><%=cnt%>楼： <%=reply.content%> </a></b> 
+			<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b><font color = "red">--<%=u.nickname%>&nbsp&nbsp时间：<%=reply.time %></font></b> </li><%
+			
+			if(cnt!= 1 && reply.user_id == user.id)
+			{		
+				%><form action=<%=this_url%> method = "post"><input type ="hidden" name = "reply_id" value ="<%=reply.id%>"/>
+				<input type ="submit" value="删除我的回复" name = "delete"/></form><%
+			}
+		
+		} 
+	}
+%>
+</font>
+</ul>
+
+<% 
+
+	if(user != null)
+	{
+		if(user.permit_post <= 0)
+		{
+			out.println("你被管理员禁言了，不能发言");
+			return;
+		}
+		
+		%>
+		<form action = <%=this_url %> method = "post">
+		<span style="vertical-align: top">回复:</span><textarea rows="20" cols="50" name="content"></textarea>
+		<input type ="submit" value="确认回复" name = "deliver"/>
+		</form><%	
+		if(request.getParameter("deliver")!=null)
+		{
+			Reply reply = new Reply();
+			reply.content = request.getParameter("content");
+			reply.user_id= user.id;
+			reply.post_id= post.id;
+			JdbcDao jdbc_ = new JdbcDao();
+			jdbc_.addReply(reply);
+			
+			response.sendRedirect(this_url);
+		}
+		if(request.getParameter("delete")!=null)
+		{
+			int reply_id = Integer.parseInt(request.getParameter("reply_id"));
+			jdbc.delReply(reply_id);
+			response.sendRedirect(this_url);
+		}
+	}
+%>
+
+<hr><a href=<%=last_url%>>返回上一级</a>  <br><a href="../home.jsp">返回首页</a>
+
+<hr><%
+	if(user != null){
+	%>
+	<font size = 3 face ="微软雅黑" color="#00FFFF">
+		你的名字：<%=user.realname %><br>
+		你的ID：<%=user.id %><br>
+		你的地址：<%=user.address %><br>
+	</font>
+<% 	}else
+	{
+		out.println("你还没有登陆");
+	}
+%>
+
+
+</body>
+</html>

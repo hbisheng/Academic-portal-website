@@ -1,0 +1,21 @@
+package edu.thu.cs;
+
+public class Course {
+	public int id = 0;
+	public String name = null;
+	public String teacher = null; 
+	public String classtime = null;
+	public String content = null;
+	public String start_time = null;
+	public String end_time = null;
+	public int capacity = 0;
+	public int chosen = 0;
+
+	
+	
+	public boolean valid()
+	{
+		return (name!=null)&&(content!=null)&&(teacher!=null);
+	}
+	
+}

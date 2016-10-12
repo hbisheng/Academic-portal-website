@@ -1,0 +1,13 @@
+package edu.thu.cs;
+
+public class Course {
+	
+
+	
+	
+	public boolean valid()
+	{
+		return (name!=null)&&(content!=null)&&(teacher!=null);
+	}
+	
+}

@@ -1,0 +1,45 @@
+package edu.thu.cs;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Category {
+	public int id=0;
+	public String name=null;
+	public boolean validate()
+	{
+		return (name != null);
+	}
+	public boolean isOld()
+	{
+		public List<Integer> getCategoryIndex()
+		{
+			List<Integer> list_c= new ArrayList<Integer>();
+			try {			
+				Connection conn = DriverManager.getConnection(URL + DATABASENAME,"root","");
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery("select * from category");
+				while(rs.next())
+			 	{
+					list_c.add(rs.getInt("id"));
+				}
+				if(conn != null)
+			    	conn.close();
+			    if(stmt != null)
+			    	stmt.close();
+			    if(rs != null)
+			    	rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return list_c;
+		}
+		return true;
+	}
+}

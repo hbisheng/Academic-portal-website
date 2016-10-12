@@ -1,0 +1,61 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<%
+	User user = (User)session.getAttribute("user");
+	JdbcDao jdbc = new JdbcDao();
+	if(user != null)
+	{
+		user = jdbc.getUser(user);
+		session.setAttribute("user",user);
+	}
+%>
+
+<%  
+	List<Integer> c=null;
+	c = jdbc.getPostIndex(1000);
+	int cnt = 0;
+%>	
+
+<font size = 6 face ="微软雅黑" >
+<p><b>教务公告如下</b></p>
+</font>
+
+<font size = 4 face ="微软雅黑" >
+<ul>
+<% 
+	if(c!=null){
+		for(Integer i: c)
+		{ 
+			Post post = jdbc.getPost(i);
+			String post_url = "content.jsp?id="+post.id;
+			++cnt;
+			%><li><b><%=cnt%>. <a href= <%=post_url %> > <%=post.topic%> </a> 
+			<%=post.initiator%>|<%=post.time%></b></li><%		
+		}
+	}
+%>
+</ul>
+<%
+if(user != null && user.permit_admin >0)
+	out.println("You can edit a new annoucement");
+//添加直接加窗口
+//删除用本页的action来完成
+//编辑新开一个页面
+
+%>
+
+
+</body>
+</html>

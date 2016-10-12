@@ -1,0 +1,6 @@
+package edu.thu.cs;
+
+public class Cookie {
+	public int operation = 0;
+	public String content = null;
+}

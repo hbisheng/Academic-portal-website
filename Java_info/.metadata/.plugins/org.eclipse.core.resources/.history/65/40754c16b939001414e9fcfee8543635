@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+<style type="text/css">
+body {font-size:12px; color:#222; text-align:center font-family:Verdana,Arial,Helvetica,sans-serif; background:#f0f0f0;}
+ul,li {list-style:none; margin:0px; padding:0px;}
+img {border:0;}
+#n{margin:10px auto; width:920px; border:1px solid #CCC;font-size:12px; line-height:30px;}
+#n a{ padding:0 4px; color:#333}
+/* 以下特效CSS */
+.focus {width:600px; height:280px; margin:0 auto; overflow:hidden; position:relative;}
+.focus ul {height:380px; position:absolute;}
+.focus ul li {float:left; width:600px; height:280px; overflow:hidden; position:relative; background:#000;}
+.focus ul li div {position:absolute; overflow:hidden;}
+.focus .btnBg {position:absolute; width:600px; height:20px; left:0; bottom:0; background:#000; display:none;}
+.focus .btn {position:absolute; width:580px; height:23px; padding:0px 10px 0px 10px; right:0; bottom:6px; text-align:right;}
+.focus .btn span {display:inline-block; _display:inline; _zoom:1; width:25px; height:24px; line-height:24px; text-align:center; _font-size:0; margin-left:5px; cursor:pointer; background:#fff;}
+.focus .btn span.on {background:#fff;}
+.focus .preNext {width:45px; height:100px; position:absolute; top:90px; background:url(img/sprite.png) no-repeat 0 0; cursor:pointer;}
+.focus .pre {left:0;}
+.focus .next {right:0; background-position:right top;}
+</style>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/sl.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+	  	$.focus("#focus001");
+	});
+</script>
+</head>
+
+<body>
+<p>左右滚动jquery焦点图特效插件 效果如下</p>
+<!-- 以上DIV代码与特效无关 -->
+<div class="focus" id="focus001">
+    <ul>
+        <li><a href="http://www.divcss5.com/" target="_blank"><img src="img/01.jpg" alt="jquery特效" /></a></li>
+        <li><a href="http://www.divcss5.com/" target="_blank"><img src="img/02.jpg" alt="DIVCSS5" /></a></li>
+        <li><a href="http://www.divcss5.com/css-texiao/texiao735.shtml" target="_blank"><img src="img/03.jpg" alt="点击左右滚动jquery焦点图特效" /></a></li>
+    </ul>
+</div>
+<!-- 以下DIV代码与特效无关 -->
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>返回 <a href="http://www.divcss5.com/css-texiao/texiao735.shtml">jq焦点幻灯片特效</a>，<a href="http://www.divcss5.com/css-texiao/texiao735.shtml">JQ CSS带数字与左右按钮幻灯片特效</a>：<a href="http://www.divcss5.com/css-texiao/texiao735.shtml">http://www.divcss5.com/css-texiao/texiao735.shtml</a></p>
+<p>&nbsp;</p>
+</body>
+</html>

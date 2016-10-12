@@ -1,0 +1,12 @@
+package edu.thu.cs;
+
+public class Media {
+	public int id = 0;
+	public String url =null;
+	public Integer type = 0;
+	public String content = null;
+	public isValid()
+	{
+		
+	}
+}

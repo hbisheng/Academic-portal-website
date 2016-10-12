@@ -1,0 +1,109 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<%
+	User user = (User)session.getAttribute("user");
+	JdbcDao jdbc = new JdbcDao();
+	if(user != null)
+	{
+		user = jdbc.getUser(user);
+		session.setAttribute("user",user);
+	}
+%>
+
+<%  
+	List<Integer> c=null;
+	c = jdbc.getPostIndex(1000);
+	int cnt = 0;
+%>	
+
+<font size = 6 face ="微软雅黑" >
+<p><b>教务公告如下</b></p>
+</font>
+
+<font size = 4 face ="微软雅黑" >
+<ul>
+<% 
+	if(c!=null){
+		for(Integer i: c)
+		{ 
+			Post post = jdbc.getPost(i);
+			String post_url = "content.jsp?id="+post.id;
+			String del_url = "index.jsp?action=delete&id="+post.id;
+			String edit_url = "edit.jsp?id="+post.id;
+			++cnt;
+			%><li><b><%=cnt%>. <a href= <%=post_url %> > <%=post.topic%> </a> 
+			<%=post.initiator%>|<%=post.time%></b></li><%
+			
+			if(user != null && user.permit_admin >0)
+			{	
+				%> <a href= <%=del_url %> > 删除 </a>  <% 
+				%> <a href= <%=edit_url %> > 编辑 </a>  <% 
+			}			
+			
+		}
+	}
+%>
+</ul>
+<%
+	if(user != null && user.permit_admin >0)
+	{	
+		%>发表新教务公告<form action = "index.jsp" method = "post">
+		<span style="vertical-align: top">教务信息:</span><textarea rows="1" cols="50" name ="topic"></textarea><br><br>
+		<span style="vertical-align: top">内容:</span><textarea rows="20" cols="50" name="content">This is fucking good!</textarea>
+		<input type ="submit" value="确认提交" name = "deliver"/>
+		</form><%	
+		
+		%>发表新帖子
+		<form action = "index.jsp" method = "post">
+		<span style="vertical-align: top">主题:</span><textarea rows="1" cols="50" name ="topic"></textarea><br><br>
+		<span style="vertical-align: top">内容:</span><textarea rows="20" cols="50" name="content">This is fucking good!</textarea>
+		<input type ="submit" value="确认发表" name = "deliver"/>
+		</form><%	
+		if(request.getParameter("deliver")!=null)
+		{
+			
+			Post post = new Post();
+			post.category_id = 1000;
+			
+			post.topic = request.getParameter("topic");
+			post.initiator = user.nickname;
+					
+			Reply reply = new Reply();
+			reply.content = request.getParameter("content");
+			reply.post_id = jdbc.addPost(post);
+			
+			reply.user_id= user.id;
+			jdbc.addReply(reply);
+			
+			response.sendRedirect("index.jsp");
+		}
+		
+		if(request.getParameter("delete")!=null)
+		{
+			int post_id = Integer.parseInt(request.getParameter("post_id"));
+			jdbc.delPost(post_id);
+			response.sendRedirect("index.jspx");
+		}
+		
+	}
+//添加直接加窗口
+//删除用本页的action来完成
+//编辑的话新开一个页面
+
+%>
+
+
+</body>
+</html>

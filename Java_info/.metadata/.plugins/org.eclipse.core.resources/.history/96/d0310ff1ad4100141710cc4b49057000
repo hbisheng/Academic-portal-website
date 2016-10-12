@@ -1,0 +1,106 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<h1>查看教务公告</h1>
+
+<%
+	User user = (User)session.getAttribute("user");
+	JdbcDao jdbc = new JdbcDao();
+	if(user != null)
+	{
+		user = jdbc.getUser(user);
+		session.setAttribute("user",user);
+	}
+%>
+
+<%  
+	List<Integer> c=null;
+	c = jdbc.getPostIndex(1000);
+	int cnt = 0;
+%>	
+
+<font size = 6 face ="微软雅黑" >
+<p><b>教务公告如下</b></p>
+</font>
+
+<font size = 4 face ="微软雅黑" >
+<ul>
+<% 
+	if(c!=null){
+		for(Integer i: c)
+		{ 
+			Post post = jdbc.getPost(i);
+			String post_url = "content.jsp?id="+post.id;
+			++cnt;
+			%><li><b><%=cnt%>. <a href= <%=post_url %> > <%=post.topic%> </a> <%= post.initiator%> <%=post.time%></b><%			
+			%></li>	
+		<%		
+		} 
+	}
+%>
+</ul>
+
+</font>
+<hr><br><a href="../home.jsp">返回首页</a>
+<hr><% 
+	if(user != null){
+	%>
+<font size = 3 face ="微软雅黑" color="#00FFFF">
+	你的名字：<%=user.realname %><br>
+	你的ID：<%=user.id %><br>
+	你的地址：<%=user.address %><br>
+</font>
+<% 	}%>
+
+<%  
+	if(user != null && user.permit_admin > 0)
+	{
+		if(request.getParameter("deliver")!=null)
+		{
+			Category category = new Category(); 	
+			category.name = request.getParameter("board");
+			if(category.validate())
+			{
+				if(category.isOld())
+				{
+					out.println("该Category已经存在了");
+				}
+				else
+				{
+					jdbc.addCategory(category);
+					response.sendRedirect("index.jsp");
+				}
+			}
+			else
+			{
+				out.println("Category不能为空");
+			}
+		}		
+		String action = request.getParameter("action");
+		if(action != null && action.equals("delete"))
+		{
+			int category_id = Integer.parseInt(request.getParameter("id"));
+			jdbc.delCategory(category_id);
+			response.sendRedirect("index.jsp");
+		}
+		%><h4>你是管理员，可以新开一个版块</h4>新开一个版块
+		<form action = "index.jsp" method = "post">
+		<span style="vertical-align: top">版块:</span><textarea rows="1" cols="50" name ="board"></textarea><br><br>
+		<input type ="submit" value="确认发表" name = "deliver"/></form><%	
+	}
+
+%>
+
+</body>
+</html>

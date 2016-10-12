@@ -1,0 +1,33 @@
+package edu.thu.cs;
+
+public class Course {
+	public int id = 0;
+	public String name = null;
+	public String teacher = null; 
+	public String classtime = null;
+	public String content = null;
+	
+	public String start_time = null;
+	public String end_time = null;
+	
+	public int capacity = 0;
+	public int valid = 0;
+
+	public int isValid()
+	{
+		start_time = "";
+		end_time="";
+		
+		if((name==null)||(teacher==null)||(classtime==null)||(content==null)||(start_time==null)||(end_time==null))
+			return 0;
+		if(name.equals("")||teacher.equals("")||classtime.equals("")||content.equals("")||start_time.equals("")||end_time.equals(""))
+			return 0;
+		
+		int period = Integer.parseInt("classtime");
+		if(period)
+		
+		return 1;
+	
+	}
+	
+}

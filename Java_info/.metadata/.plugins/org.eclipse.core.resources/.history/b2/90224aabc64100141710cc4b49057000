@@ -1,0 +1,177 @@
+<%@page import="mail.MailTest" %>
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
+ <style type="text/css">
+      body {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+      }
+      .form-signin {
+        max-width: 430px;
+        padding: 19px 29px 29px;
+        margin: 0 auto 20px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        -webkit-border-radius: 5px;
+           -moz-border-radius: 5px;
+                border-radius: 5px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      }
+      .form-signin .form-signin-heading,
+      .form-signin .checkbox {
+        margin-bottom: 10px;
+      }
+      .form-signin input[type="text"],
+      .form-signin input[type="password"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+      a{
+		text-decoration: none;
+		color:white;
+		}
+    </style>
+<link href="../bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+<title>Insert title here</title>
+</head>
+<body>
+
+<div class="navbar nav-pills navbar-fixed-top">
+  <div class="navbar-inner">
+    <a class="brand" href="#">INFO</a>
+    <ul class="nav">
+      <li class="divider-vertical"><a href="../home.jsp">首页</a></li>
+      <% 
+      	User user_tmp = (User)session.getAttribute("user");
+      	if(user_tmp == null)
+      	{
+      		%><li class="active" font face = "微软雅黑"><a href="../account/login.jsp">登陆/注册</a></li> <%
+      	}
+      	else
+      	{
+      		String url = "../account/user_info.jsp?id="+user_tmp.id;
+      		%><li class="active"  font face = "微软雅黑"><a href=<%=url%>><%=user_tmp.nickname%></a></li> <%
+      	}
+      
+      %><li class="divider-vertical"><a href="../discussion/index.jsp">公共讨论区</a></li><%
+      
+      if(user_tmp != null)
+      {
+	      	%><li class="divider-vertical"><a href="../course/index.jsp">网络学堂</a></li>
+	      	<li class="divider-vertical"><a href="../notice/index.jsp">教务公告</a></li>
+	      	<li class="divider-vertical"><a href="../media/index.jsp">外部资源</a></li><%
+      }
+ 	  
+      %><li class="divider-vertical"><a href="../intro.jsp">师资力量</a></li>
+      <li class="divider-vertical"><a href="../author.jsp">开发人员</a></li>
+    </ul>
+  </div>
+</div>
+
+
+	<div class="container form-signin">
+		<div class="row-fluid">				
+<%
+	try{
+		JdbcDao jdbc = new JdbcDao();
+		String content = request.getParameter("token");
+		Token token = null;
+		if(content != null)
+		{
+			token = jdbc.getToken(content);
+			if(token != null)
+			{
+				if(token.operation==1)
+				{
+					User user = new User();
+					user.id = token.user_id;
+					user = jdbc.getUser(user);
+					user.verify=1;
+					jdbc.updateUser(user);
+					session.setAttribute("user",user);
+					%>
+					<div class="alert alert-success">
+	  				<button type="button" class="close" data-dismiss="alert">&times;</button>
+	 				<strong>Good!</strong> 您已经验证成功，3秒钟之后回到首页
+					</div>
+					<%
+			
+					response.setHeader("refresh","3;url=../home.jsp");	
+				}
+				if(token.operation==2)
+				{
+					
+					String this_url = "remote.jsp?token="+token.content;
+					
+					User user = new User();
+					user.id = token.user_id;
+					user = jdbc.getUser(user);
+					if(user.verify == 0)
+					{
+						%>
+						<div class="alert alert-block">
+		  				<button type="button" class="close" data-dismiss="alert">&times;</button>
+		 				<strong>对不起!</strong> 你还没有验证
+						</div>
+						<%
+						return;
+					}
+					//设置新密码即可
+					
+					%>
+					
+			
+					<form action=<%=this_url %> method="post">
+					<p class="form-signin-heading text-warning text-center" ><font size =5>请输入你的新密码：</p>
+					<input type = "password" class="span6 input-block-level" name = "password"/> 
+					<br/>
+					<input type="submit" class="btn btn-large btn-info" name = "regain" value="密码找回" />
+				
+					</form>
+					
+					<%
+					
+					if(request.getParameter("regain")!=null)
+					{
+						String password = request.getParameter("password"); 
+						if(password!= null)
+						{
+							user.password = password;
+							jdbc.updateUser(user);
+							%>
+							<div class="alert alert=success">
+	  						<button type="button" class="close" data-dismiss="alert">&times;</button>
+	 						你好!<strong> <%=user.realname%> </strong>密码修改成功，过五秒钟后自动跳转到主页
+							</div>
+							<% 
+							session.setAttribute("user", user);
+							response.setHeader("refresh","5;url=../home.jsp");
+						}		
+					}
+				}
+			}
+		}
+		else
+			return;
+	}catch(Exception e){System.out.println(e);}
+%>
+
+<hr>Join us<i class="icon-hand-right"></i><a href="register.jsp" style="color:blue"><strong>注册</strong></a>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+package edu.thu.cs;
+
+public class Status {
+	public int choose = 0;
+	public 
+}

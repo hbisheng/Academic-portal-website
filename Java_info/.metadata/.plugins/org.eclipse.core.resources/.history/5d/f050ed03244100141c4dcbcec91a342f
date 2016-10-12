@@ -1,0 +1,51 @@
+package edu.thu.cs;
+import jdbc.*;
+
+public class User {
+	public int id=0;
+	public String account=null;
+	public String password=null;
+	public String realname=null;
+	public String nickname=null;
+	public String sex=null;
+	public String birth=null;
+	public String phone=null;
+	public String e_name=null;
+	public String e_phone=null;
+	public String address=null;
+	public String qq=null;
+	public int verify=-1;
+	public int permit_login=-1;
+	public int permit_post=-1;
+	public int permit_admin=-1;
+	
+	public boolean isValid()
+	{
+		if(qq == null)
+			qq = "";
+		
+		
+		return ( !(account.equals(""))&&!(password.equals(""))&&!(realname.equals(""))
+				&&!(nickname.equals(""))&&(!sex.equals(""))&&!(birth.equals(""))&&!(phone.equals(""))
+				&&!(e_name.equals(""))&&!(e_phone.equals(""))&&!(address.equals(""))&&!(permit_login.equals(""))
+				&&!(permit_post=-1)&&!(permit_admin.equals(""))&&!(verify.equals("")));	
+	}
+	public int isOld()
+	{
+		JdbcDao jdbc = new JdbcDao();
+		User user = new User();
+		user.id=0;
+		user.account = account;
+		user = jdbc.getUser(user);
+		if(user != null)
+			return 1;//user
+		user = new User();
+		user.id=0;
+		user.account = null;
+		user.nickname = nickname;
+		user = jdbc.getUser(user);
+		if(user != null)
+			return 2;//nickname
+		return 0;
+	}
+}

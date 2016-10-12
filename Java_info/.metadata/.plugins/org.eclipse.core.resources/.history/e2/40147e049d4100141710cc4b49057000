@@ -1,0 +1,109 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<h3>在这个页面上展示所有外部链接，并提供添加、编辑、删除等功能</h3>
+
+
+<%
+	String this_url = "media_manage.jsp"; 	
+	JdbcDao jdbc = new JdbcDao();
+	
+	String action = request.getParameter("action");
+	System.out.println(action);
+	if(action != null)//删除某个课程
+	{
+		if(action.equals("delete"))
+		{
+		
+		}
+		else if(action.equals("yes_choose"))
+		{
+		
+		}
+	}
+%>
+
+<hr>
+<%	
+	List<Integer> c= jdbc.getMediaIndex(0);
+	int cnt = 0;
+	if(c!=null){
+		%><tr>	
+		for(Integer i : c)
+		{ 
+			++cnt;
+			Media media = jdbc.getMedia(i);
+			
+		}
+		
+	}
+%>
+
+<hr><form name="发布新课程"action=<%=this_url%> method="post">添加课程界面：
+	<br/>课程名称<input type="text" name="name" />
+	<br/>授课老师<input type="text" name="teacher" />
+	<br/>上课时间 <input type="text" name="classtime" />
+	<br/>课容量<input type="text" name="capacity" />
+	<br/>课程介绍<input type="text" name="content" />
+	<br/><input type="submit" name="add_confirm" value="确认" />
+</form>
+<%
+	if(request.getParameter("add_confirm")!=null)//发布新课程
+	{
+		//<br/>课程开始时间<input type="text" name="start_time" /> <br/>课程结束时间<input type="text" name="end_time" />
+	
+		System.out.println("in add_confirm");
+		try {
+			
+			Course tmp = new Course();
+			tmp.name = request.getParameter("name");
+			tmp.teacher = request.getParameter("teacher");
+
+			tmp.classtime = request.getParameter("classtime");
+			
+			if(request.getParameter("capacity")!=null && !request.getParameter("capacity").equals(""))
+				tmp.capacity = Integer.parseInt(request.getParameter("capacity"));
+			
+			tmp.valid = 1;
+
+			tmp.content = request.getParameter("content");
+			tmp.start_time = request.getParameter("start_time");
+			tmp.end_time = request.getParameter("end_time");
+			
+			
+			int validation = tmp.isValid();
+			if(validation == 0)
+			{
+				%>课程信息没有补全<%
+			}
+			else if(validation == -1)
+			{
+				%>上课时间信息不合法<%
+			}
+			else if(validation == 1)
+			{
+				int course_id = jdbc.addCourse(tmp);
+				System.out.println("加入课程ID！"+course_id);				
+				response.sendRedirect("../courses/course.jsp?id="+course_id);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+%>
+
+	
+<hr><a href="../home.jsp">返回首页</a>
+</body>
+</html>

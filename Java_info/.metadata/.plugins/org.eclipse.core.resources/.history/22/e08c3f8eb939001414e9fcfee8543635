@@ -1,0 +1,114 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8" import = "java.util.*" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>This is a learning page</title>
+
+<style>
+/* 以下特效CSS */
+body {font-size:12px; color:#222; text-align:center font-family:Verdana,Arial,Helvetica,sans-serif; background:#f0f0f0;}
+ul,li {list-style:none; margin:0px; padding:0px;}
+img {border:0;}
+#n{margin:10px auto; width:920px; border:1px solid #CCC;font-size:12px; line-height:30px;}
+#n a{ padding:0 4px; color:#333}
+
+.focus {width:600px; height:280px; margin:0 auto; overflow:hidden; position:relative;}
+.focus ul {height:380px; position:absolute;}
+.focus ul li {float:left; width:600px; height:280px; overflow:hidden; position:relative; background:#000;}
+.focus ul li div {position:absolute; overflow:hidden;}
+.focus .btnBg {position:absolute; width:600px; height:20px; left:0; bottom:0; background:#000; display:none;}
+.focus .btn {position:absolute; width:580px; height:23px; padding:0px 10px 0px 10px; right:0; bottom:6px; text-align:right;}
+.focus .btn span {display:inline-block; _display:inline; _zoom:1; width:25px; height:24px; line-height:24px; text-align:center; _font-size:0; margin-left:5px; cursor:pointer; background:#fff;}
+.focus .btn span.on {background:#fff;}
+.focus .preNext {width:45px; height:100px; position:absolute; top:90px; background:url(img/sprite.png) no-repeat 0 0; cursor:pointer;}
+.focus .pre {left:0;}
+.focus .next {right:0; background-position:right top;}
+</style>
+</head>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/sl.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+	  	$.focus("#focus001");
+	});
+</script>
+</head>
+
+
+
+
+<body bgcolor= "#8080C0">
+<h1 align ="center"><font size = 8 face ="微软雅黑" >This is Tribble shit's big homework</font></h1>
+
+<form action="">
+Account:<input type="text" name="account">Password:<input type="password" name="password">
+<em>Are you an idiot?</em>
+<input type="radio" name="sex" value="Yes">Yes
+<input type="radio" name="sex" value="No">No
+<input type="submit">
+</form>
+
+
+<div class="focus" id="focus001">
+    <ul>
+        <li><a href="http://www.divcss5.com/" target="_blank"><img src="img/01.jpg" alt="jquery特效" /></a></li>
+        <li><a href="http://www.divcss5.com/" target="_blank"><img src="img/02.jpg" alt="DIVCSS5" /></a></li>
+        <li><a href="#" target="_blank"><img src="img/03.jpg" alt="点击左右滚动jquery焦点图特效" /></a></li>
+    </ul>
+</div> 
+
+
+
+
+<%! private int count = 0; %>
+<hr><blockquote>
+<p>Access to this page since server reboot: <%= ++count %> --God</p> 
+These two guys are genius! --Dashit
+</blockquote>
+
+<a href="http://www.baidu.com"><img border= "0" src = "img/Bolt.jpg"  height = "300"></a>
+<a href="http://www.sina.com.cn"><img border= "0" src = "img/Double.jpg"  height = "300"></a><br>
+<a href="hbisheng@126.com?subject=Hello%20again">Send mail</a>
+
+<hr><table border="7" cellpadding = "10" background = "img/silk_texture.jpg">
+<caption>Here is our time table</caption>
+<tr align ="center"><th>Day1</th><th>Day2</th><th>Day3</th><th>Day4</th><th>Day5</th><th>Day6</th><th>Day7</th></tr>
+<tr align ="center"><td>9.12</td><td>9.13</td><td>9.14</td><td>9.15</td><td>9.16</td><td>9.17</td><td>9.18</td></tr>
+<tr align ="center"><td>Fucking play</td><td>Fucking play</td><td>Fucking play</td><td>Fucking play</td><td>Work!</td><td>Work!</td><td>Work!</td></tr>
+</table>
+
+<hr>
+<div bgcolor="red">
+<h3>To do list</h3>
+<ul type = "square"><li>Breakfast is on you.
+<li>Lunch is on qin.
+<li>Dinner is on me.</ul>
+</div>
+
+<hr><p>Making a new Info is our goal!!!</p>
+<a href="http://info.tsinghua.edu.cn" target="_blank" name = "label">Click here to see!</a>
+<font color = "#02DF82" size = 4>
+<p>Donate to support us</p>
+100084<br>
+Tsinghua University<br>
+Zijing No.2 building<br>
+109A<br>
+</font>
+	<% for (int i = 0; i < 10; i++){ %>
+		A loop
+	<% }%>
+	<p>An expression: <%= Integer.toString(2*3*4*5) %></p>
+	<p>${7/3.0}</p>
+	<hr>
+	
+	<font color="#FF0000"><b>Red!!</b></font> 
+	<del>delete this para</del>
+	<ins>insert a sentense</ins>
+<hr>
+ 
+<p>Any recommendation?</p>
+<textarea rows="20" cols="100">This is fucking good!</textarea>
+
+</body>
+</html>

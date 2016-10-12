@@ -1,0 +1,51 @@
+<%@page import="mail.MailTest" %>
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<form name="登陆"action="password" method="post">
+	登陆界面：
+	<br/>
+	Name: 	
+	<input type="text" name="name" value = "SexyDouble"/>
+	<br />
+	password: 
+	<input type="text" name="password" value= "asdasd" />
+	<br/>
+	<input type="submit" value="登陆" />
+	</form>
+<%
+		try {
+			if(request.getAttribute("regain")!=null)
+			
+			String a = request.getParameter("name");
+			String b = request.getParameter("password");
+			if(a != null && b != null){
+				JdbcDao jdbc = new JdbcDao();
+				User tmp = new User(); tmp.account = a;
+				User tar = jdbc.getUser(tmp);
+				if(tar != null)
+					if(tar.password.equals(b))
+					{
+						%><br>你好！<%=tar.realname%> <br>过一秒钟后自动跳转到主页<% 
+						session.setAttribute("user", tar);
+						response.setHeader("refresh","1;url=../home.jsp");			
+					}	
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+%>	
+
+<hr>Join us→<a href="register.jsp">注册</a>
+</body>
+</html>

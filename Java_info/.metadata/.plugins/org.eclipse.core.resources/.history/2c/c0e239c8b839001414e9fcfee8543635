@@ -1,0 +1,84 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8" import = "java.util.*" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>This is a learning page</title></head>
+
+<body bgcolor= "#8080C0">
+<h1 align ="center"><font size = 8 face ="微软雅黑" >This is Tribble shit's big homework</font></h1>
+
+<form action="">
+Account:<input type="text" name="account">Password:<input type="password" name="password">
+<em>Are you an idiot?</em>
+<input type="radio" name="sex" value="Yes">Yes
+<input type="radio" name="sex" value="No">No
+<input type="submit">
+</form>
+
+
+
+
+
+<div class="focus" id="focus001">
+    <ul>
+        <li><a href="http://www.divcss5.com/" target="_blank"><img src="img/01.jpg" alt="jquery特效" /></a></li>
+        <li><a href="http://www.divcss5.com/" target="_blank"><img src="img/02.jpg" alt="DIVCSS5" /></a></li>
+        <li><a href="#" target="_blank"><img src="img/03.jpg" alt="点击左右滚动jquery焦点图特效" /></a></li>
+    </ul>
+</div> 
+
+
+
+
+<%! private int count = 0; %>
+<hr><blockquote>
+<p>Access to this page since server reboot: <%= ++count %> --God</p> 
+These two guys are genius! --Dashit
+</blockquote>
+
+<a href="http://www.baidu.com"><img border= "0" src = "img/Bolt.jpg"  height = "300"></a>
+<a href="http://www.sina.com.cn"><img border= "0" src = "img/Double.jpg"  height = "300"></a><br>
+<a href="hbisheng@126.com?subject=Hello%20again">Send mail</a>
+
+<hr><table border="7" cellpadding = "10" background = "silk_texture.jpg">
+<caption>Here is our time table</caption>
+<tr align ="center"><th>Day1</th><th>Day2</th><th>Day3</th><th>Day4</th><th>Day5</th><th>Day6</th><th>Day7</th></tr>
+<tr align ="center"><td>9.12</td><td>9.13</td><td>9.14</td><td>9.15</td><td>9.16</td><td>9.17</td><td>9.18</td></tr>
+<tr align ="center"><td>Fucking play</td><td>Fucking play</td><td>Fucking play</td><td>Fucking play</td><td>Work!</td><td>Work!</td><td>Work!</td></tr>
+</table>
+
+<hr>
+<div bgcolor="red">
+<h3>To do list</h3>
+<ul type = "square"><li>Breakfast is on you.
+<li>Lunch is on qin.
+<li>Dinner is on me.</ul>
+</div>
+
+<hr><p>Making a new Info is our goal!!!</p>
+<a href="http://info.tsinghua.edu.cn" target="_blank" name = "label">Click here to see!</a>
+<font color = "#02DF82" size = 4>
+<p>Donate to support us</p>
+100084<br>
+Tsinghua University<br>
+Zijing No.2 building<br>
+109A<br>
+</font>
+	<% for (int i = 0; i < 10; i++){ %>
+		A loop
+	<% }%>
+	<p>An expression: <%= Integer.toString(2*3*4*5) %></p>
+	<p>${7/3.0}</p>
+	<hr>
+	
+	<font color="#FF0000"><b>Red!!</b></font> 
+	<del>delete this para</del>
+	<ins>insert a sentense</ins>
+<hr>
+ 
+<p>Any recommendation?</p>
+<textarea rows="20" cols="100">This is fucking good!</textarea>
+
+</body>
+</html>

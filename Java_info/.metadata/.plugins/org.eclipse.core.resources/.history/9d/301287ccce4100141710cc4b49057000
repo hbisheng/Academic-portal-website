@@ -1,0 +1,147 @@
+<%@page import="edu.thu.cs.*"%>
+<%@page import="jdbc.*"%>
+<%@page import="java.util.*"%>
+
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
+<link href="../bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+<div class="navbar nav-pills navbar-fixed-top">
+  <div class="navbar-inner">
+    <a class="brand" href="#">INFO</a>
+    <ul class="nav">
+      <li class="divider-vertical"><a href="../home.jsp">首页</a></li>
+      <% 
+      	User user_tmp = (User)session.getAttribute("user");
+      	if(user_tmp == null)
+      	{
+      		%><li class="divider-vertical" font face = "微软雅黑"><a href="../account/login.jsp">登陆/注册</a></li> <%
+      	}
+      	else
+      	{
+      		String url = "../account/user_info.jsp?id="+user_tmp.id;
+      		%><li class="divider-vertical"  font face = "微软雅黑"><a href=<%=url%>><%=user_tmp.nickname%></a></li> <%
+      	}
+      
+      %><li class="divider-vertical"><a href="../discussion/index.jsp">公共讨论区</a></li><%
+      
+      if(user_tmp != null)
+      {
+	      	%><li class="active"><a href="../courses/index.jsp">网络学堂</a></li>
+	      	<li class="divider-vertical"><a href="../notice/index.jsp">教务公告</a></li>
+	      	<li class="divider-vertical"><a href="../media/index.jsp">外部资源</a></li><%
+      }
+ 	  
+      %><li class="divider-vertical"><a href="../intro.jsp">师资力量</a></li>
+      <li class="divider-vertical"><a href="../author.jsp">开发人员</a></li>
+    </ul>
+  </div>
+</div>
+<br><br>
+
+<%
+	User user_ = (User)session.getAttribute("user");
+	
+	JdbcDao jdbc = new JdbcDao();
+	List<Integer> c=null;
+	User user = (User)session.getAttribute("user");
+	if(user==null)
+	{
+		out.println("你还没有登陆，所以没有课程可以显示");
+		return;
+	}
+	else
+	{
+		c = jdbc.getCourseIndex(user.id);
+	}
+	int cnt = 0;
+%>	
+
+
+<font size = 5 face ="微软雅黑"><p class="text-info"><b>我的课程</b></p></font>
+<table class="table table-striped" >
+<% 
+	int [][]map = new int[10][10];
+	%><tr><td>序号</td><td>课程名称</td><td>授课老师</td><td>上课时间</td><td>退课操作</td></tr><% 
+	List<Integer> course_list=null;
+	course_list = jdbc.getCourseIndex(user.id);
+	if(course_list!=null){
+		cnt = 0;
+		for(Integer i : course_list)
+		{ 
+			Course course = jdbc.getCourse(i);
+			String info_url = "course.jsp?id="+course.id+"&type=1";
+			String out_url = "getout.jsp?cid="+course.id+"&uid="+user.id;
+			++cnt;
+			
+			int time = Integer.parseInt(course.classtime);
+			map[time/10][time%10] = course.id;//time from 11-77
+			
+			%>
+			<tr>
+			<td><%=cnt%></td>
+			<td><a href= <%=info_url %> > <%=course.name%> </a></td>
+			<td><%=course.teacher%></td>
+			
+			<td><%=course.classtime %></td>
+			
+			<td><a href= <%=out_url%> >退课 </a></td>
+			
+			</tr>
+			<%
+		} 
+	}
+%>
+</table>
+
+
+<font size = 5 face ="微软雅黑"><p class="text-info"><b>我的课表</b></p></font>
+<table class="table table-striped" style="font-family:微软雅黑">
+<% 
+	String a ="一二三四五六七八";
+	for(int i = 0;i != 7; i++)
+	{
+		%><tr><% 
+		for(int j = 0; j != 8; j++)
+		{
+			String tmp = null;
+			Course course = null;
+			if(i + j == 0)
+				tmp = "";
+			else if(j == 0)
+				tmp = "第"+a.charAt(i-1)+"大节";
+			else if(i == 0)
+				tmp = "星期"+a.charAt(j-1);	 
+			else if( map[j][i] > 0)// 7 6
+			{
+				course = jdbc.getCourse(map[j][i]);
+				tmp = course.name;
+			}
+			else
+				tmp="";
+			%><td><%=tmp%></td><%
+		}	
+		%></tr><%
+	}
+	
+%>
+</table>
+
+
+
+
+
+
+<hr><a href="choose.jsp">进入选课</a><br>
+<br><a href="../home.jsp">返回首页</a>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+package edu.thu.cs;
+
+public class Category {
+	public int id=0;
+	puvlic String name=null;
+	
+}
